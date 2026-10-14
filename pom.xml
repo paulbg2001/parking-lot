@@ -14,7 +14,8 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
-        <jetty.version>12.0.15</jetty.version>
+        <glassfish.version>7.0.25</glassfish.version>
+        <cargo.version>1.10.16</cargo.version>
     </properties>
 
     <dependencies>
@@ -50,15 +51,27 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
-            <!-- Run the app with: mvn jetty:run  ->  http://localhost:8080/ParkingLot-1.0-SNAPSHOT/ -->
+            <!-- Run the app on GlassFish with: mvn package cargo:run  ->  http://localhost:8080/ParkingLot-1.0-SNAPSHOT/ -->
             <plugin>
-                <groupId>org.eclipse.jetty.ee10</groupId>
-                <artifactId>jetty-ee10-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>${cargo.version}</version>
                 <configuration>
-                    <webApp>
-                        <contextPath>/${project.artifactId}-${project.version}</contextPath>
-                    </webApp>
+                    <container>
+                        <containerId>glassfish7x</containerId>
+                        <artifactInstaller>
+                            <groupId>org.glassfish.main.distributions</groupId>
+                            <artifactId>glassfish</artifactId>
+                            <version>${glassfish.version}</version>
+                        </artifactInstaller>
+                    </container>
+                    <deployables>
+                        <deployable>
+                            <properties>
+                                <context>${project.artifactId}-${project.version}</context>
+                            </properties>
+                        </deployable>
+                    </deployables>
                 </configuration>
             </plugin>
         </plugins>
