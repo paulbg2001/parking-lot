@@ -16,6 +16,7 @@
         <junit.version>5.10.2</junit.version>
         <glassfish.version>7.0.25</glassfish.version>
         <cargo.version>1.10.16</cargo.version>
+        <mysql.version>8.0.33</mysql.version>
     </properties>
 
     <dependencies>
@@ -23,6 +24,13 @@
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>10.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- MySQL connector: provided by GlassFish (Cargo copies it into the domain lib) -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -64,7 +72,26 @@
                             <artifactId>glassfish</artifactId>
                             <version>${glassfish.version}</version>
                         </artifactInstaller>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.mysql</groupId>
+                                <artifactId>mysql-connector-j</artifactId>
+                            </dependency>
+                        </dependencies>
                     </container>
+                    <configuration>
+                        <properties>
+                            <!-- ParkingLotConnectionPool + JDBC resource jdbc/ParkingLotResource -->
+                            <cargo.datasource.datasource.parkinglot>
+                                cargo.datasource.jndi=jdbc/ParkingLotResource|
+                                cargo.datasource.type=javax.sql.XADataSource|
+                                cargo.datasource.driver=com.mysql.cj.jdbc.MysqlDataSource|
+                                cargo.datasource.url=jdbc:mysql://localhost:3306/ParkingLot?useSSL=false|
+                                cargo.datasource.username=ParkingLotUser|
+                                cargo.datasource.password=ParkingLotPassword
+                            </cargo.datasource.datasource.parkinglot>
+                        </properties>
+                    </configuration>
                     <deployables>
                         <deployable>
                             <properties>
